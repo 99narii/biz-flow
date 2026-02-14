@@ -1,0 +1,40 @@
+// BizFlow Mixins
+// 모바일 퍼스트 반응형 믹스인 (min-width 기반)
+
+// Breakpoints
+$breakpoint-xs: 320px;
+$breakpoint-sm: 480px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+// 반응형 믹스인
+@mixin xs {
+  @media (min-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+@mixin sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+// 커스텀 브레이크포인트 믹스인
+@mixin breakpoint($size) {
+  @media (min-width: $size) {
+    @content;
+  }
+}

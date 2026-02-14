@@ -1,0 +1,45 @@
+@use '../styles/reset';
+@use '../styles/variables';
+@use '../styles/calendar';
+@use '../styles/tokens' as *;
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: $font-family;
+  font-weight: $font-weight-regular;
+  font-size: $font-size-base;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// 스크롤바 스타일링
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: $radius-full;
+}
+
+// 포커스 스타일
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+// 선택 스타일
+::selection {
+  background-color: var(--color-primary-light);
+  color: white;
+}

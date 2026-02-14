@@ -1,0 +1,72 @@
+@use '../../../styles/tokens' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-4;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.itemLabel {
+  font-size: $font-size-base;
+  color: var(--color-text-primary);
+}
+
+.itemValue {
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+}
+
+.logoutButton {
+  width: 100%;
+  padding: $spacing-4;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: var(--color-error);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+  }
+}

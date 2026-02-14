@@ -1,0 +1,257 @@
+// react-big-calendar 커스텀 스타일
+@use './tokens' as *;
+@use './mixins' as *;
+
+.rbc-calendar {
+  font-family: $font-family;
+  background-color: var(--color-surface);
+  height: 100%;
+  border: none !important;
+
+  // 모든 내부 요소의 세로 테두리 제거
+  * {
+    border-left: none !important;
+    border-right: none !important;
+  }
+}
+
+.rbc-header {
+  padding: $spacing-1;
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-tertiary);
+  border: none !important;
+
+  @include md {
+    font-size: $font-size-xs;
+    padding: $spacing-2 $spacing-1;
+  }
+}
+
+.rbc-header + .rbc-header {
+  border-left: none !important;
+}
+
+.rbc-month-view {
+  border: none !important;
+  height: 100%;
+}
+
+.rbc-month-row {
+  border-top: 1px solid var(--color-border) !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+// 외부 테두리 제거
+.rbc-month-header {
+  border: none !important;
+}
+
+.rbc-row-bg {
+  border: none !important;
+}
+
+.rbc-row {
+  border: none !important;
+}
+
+.rbc-day-bg {
+  background-color: var(--color-surface);
+  border: none !important;
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+  }
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: none !important;
+}
+
+.rbc-off-range-bg {
+  background-color: var(--color-bg-secondary);
+}
+
+.rbc-today {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.rbc-date-cell {
+  padding: $spacing-1;
+  font-size: $font-size-xxs;
+  color: var(--color-text-primary);
+  text-align: right;
+  border: none !important;
+
+  @include md {
+    font-size: $font-size-xs;
+    padding: $spacing-1 $spacing-2;
+  }
+
+  &.rbc-off-range {
+    color: var(--color-text-tertiary);
+  }
+
+  &.rbc-now {
+    font-weight: $font-weight-bold;
+    color: var(--color-primary);
+  }
+}
+
+.rbc-event {
+  padding: 0 $spacing-1;
+  font-size: $font-size-xxs;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: $radius-sm;
+
+  @include md {
+    padding: $spacing-1 $spacing-2;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.rbc-event-content {
+  font-size: $font-size-xxs;
+
+  @include md {
+    font-size: $font-size-xs;
+  }
+}
+
+.rbc-show-more {
+  font-size: $font-size-xxs;
+  color: var(--color-primary);
+  font-weight: $font-weight-medium;
+  padding: 0 $spacing-1;
+
+  @include md {
+    font-size: $font-size-xs;
+  }
+}
+
+.rbc-row-segment {
+  padding: 0 1px 1px 1px;
+}
+
+// 커스텀 툴바 사용으로 기본 툴바 숨김
+.rbc-toolbar {
+  display: none;
+}
+
+.rbc-toolbar button {
+  padding: $spacing-1 $spacing-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  @include md {
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+  }
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+  }
+
+  &.rbc-active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+}
+
+.rbc-btn-group button + button {
+  margin-left: -1px;
+}
+
+.rbc-btn-group button:first-child {
+  border-radius: $radius-md 0 0 $radius-md;
+}
+
+.rbc-btn-group button:last-child {
+  border-radius: 0 $radius-md $radius-md 0;
+}
+
+.rbc-btn-group button:only-child {
+  border-radius: $radius-md;
+}
+
+.rbc-toolbar-label {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+
+  @include md {
+    font-size: $font-size-lg;
+  }
+}
+
+// Week & Day view
+.rbc-time-view {
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.rbc-time-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rbc-time-content {
+  border-top: 1px solid var(--color-border);
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rbc-time-slot {
+  font-size: $font-size-xs;
+  color: var(--color-text-tertiary);
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid var(--color-border);
+}
+
+.rbc-current-time-indicator {
+  background-color: var(--color-primary);
+}
+
+// Agenda view
+.rbc-agenda-view {
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.rbc-agenda-table {
+  font-size: $font-size-sm;
+
+  thead {
+    background-color: var(--color-bg-secondary);
+  }
+
+  th, td {
+    padding: $spacing-3;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+  color: var(--color-text-secondary);
+}
+
+.rbc-agenda-event-cell {
+  color: var(--color-text-primary);
+}

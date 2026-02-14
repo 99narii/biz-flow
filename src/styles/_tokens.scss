@@ -1,0 +1,49 @@
+// BizFlow Design Tokens (SCSS Variables Only)
+
+// === FONT SIZE ===
+$font-size-xxs: 0.6rem; // 9.6px
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.8125rem;  // 13px
+$font-size-base: 0.875rem; // 14px (모바일 기본)
+$font-size-md: 1rem;       // 16px
+$font-size-lg: 1.125rem;   // 18px
+$font-size-xl: 1.25rem;    // 20px
+$font-size-2xl: 1.5rem;    // 24px
+$font-size-3xl: 1.875rem;  // 30px
+
+// === SPACING (4px 베이스) ===
+$spacing-1: 0.25rem;   // 4px
+$spacing-1-5: 0.375rem; // 6px
+$spacing-2: 0.5rem;    // 8px
+$spacing-3: 0.75rem;   // 12px
+$spacing-4: 1rem;      // 16px
+$spacing-5: 1.25rem;   // 20px
+$spacing-6: 1.5rem;    // 24px
+$spacing-8: 2rem;      // 32px
+$spacing-10: 2.5rem;   // 40px
+$spacing-12: 3rem;     // 48px
+$spacing-16: 4rem;     // 64px
+
+// === RADIUS ===
+$radius-sm: 0.375rem;  // 6px
+$radius-md: 0.5rem;    // 8px
+$radius-lg: 0.75rem;   // 12px
+$radius-xl: 1rem;      // 16px
+$radius-full: 9999px;
+
+// === BREAKPOINTS ===
+$bp-sm: 480px;
+$bp-md: 768px;
+$bp-lg: 1024px;        // 최대 너비
+
+// === FONT ===
+$font-family: 'Pretendard Variable', 'Pretendard', -apple-system,
+  BlinkMacSystemFont, system-ui, sans-serif;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// === LAYOUT ===
+$max-width: 1024px;
+$tabbar-height: 64px;

@@ -1,0 +1,73 @@
+// BizFlow CSS Variables (Global Styles)
+
+// === BASE THEME (Light) ===
+:root {
+  // Accent (기본: indigo)
+  --color-primary: #6366F1;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #4F46E5;
+
+  // Grayscale
+  --color-bg: #FFFFFF;
+  --color-bg-secondary: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary: #9CA3AF;
+
+  // Semantic
+  --color-income: #10B981;
+  --color-expense: #EF4444;
+  --color-savings: #3B82F6;
+  --color-receivable: #F59E0B;
+
+  // State
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+
+  // TabBar
+  --tabbar-height: 64px;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+// === DARK THEME ===
+[data-theme="dark"] {
+  --color-bg: #0F172A;
+  --color-bg-secondary: #1E293B;
+  --color-surface: #1E293B;
+  --color-border: #334155;
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-tertiary: #64748B;
+}
+
+// === ACCENT COLOR PALETTES ===
+// INDIGO (기본)
+[data-accent="indigo"] {
+  --color-primary: #6366F1;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #4F46E5;
+}
+
+// PINK
+[data-accent="pink"] {
+  --color-primary: #EC407A;
+  --color-primary-light: #F06292;
+  --color-primary-dark: #D81B60;
+}
+
+// PURPLE
+[data-accent="purple"] {
+  --color-primary: #A171CE;
+  --color-primary-light: #B794D6;
+  --color-primary-dark: #8B5FC6;
+}
+
+// MINT
+[data-accent="mint"] {
+  --color-primary: #71C8BC;
+  --color-primary-light: #8DD5CB;
+  --color-primary-dark: #5AB8AB;
+}

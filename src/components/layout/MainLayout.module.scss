@@ -1,0 +1,24 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  max-width: $max-width;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: calc(var(--tabbar-height) + var(--safe-area-bottom));
+  background-color: var(--color-bg);
+
+  @include lg {
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+  }
+}
+
+.main {
+  // padding: $spacing-4;
+
+  @include md {
+    padding: $spacing-6;
+  }
+}

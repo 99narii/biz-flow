@@ -1,0 +1,174 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: $spacing-4;
+  background-color: var(--color-bg);
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  padding: $spacing-6;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+
+  @include md {
+    padding: $spacing-8;
+  }
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: $spacing-6;
+}
+
+.logoText {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: $spacing-6;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  width: 100%;
+  padding: $spacing-3 $spacing-4;
+  font-size: $font-size-base;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  transition: border-color 0.2s ease;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+.submitButton {
+  width: 100%;
+  padding: $spacing-3 $spacing-4;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: white;
+  background-color: var(--color-primary);
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  padding: $spacing-3;
+  font-size: $font-size-sm;
+  color: var(--color-error);
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: $radius-md;
+  text-align: center;
+}
+
+.footer {
+  margin-top: $spacing-6;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: $font-weight-medium;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  margin: $spacing-4 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-border);
+  }
+}
+
+.dividerText {
+  font-size: $font-size-sm;
+  color: var(--color-text-tertiary);
+}
+
+.checkboxGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-4;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+  }
+
+  span {
+    user-select: none;
+  }
+}

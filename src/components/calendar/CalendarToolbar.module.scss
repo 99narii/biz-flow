@@ -1,0 +1,173 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-2;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 48px;
+}
+
+// 좌측 년월 섹션
+.leftSection {
+  position: relative;
+}
+
+.dateButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+  padding: $spacing-1 $spacing-2;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  background: transparent;
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+
+  @include md {
+    font-size: $font-size-lg;
+  }
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+  }
+
+  svg {
+    color: var(--color-text-tertiary);
+    transition: transform 0.2s ease;
+  }
+
+  .rotated {
+    transform: rotate(180deg);
+  }
+}
+
+// 년월 선택 드롭다운
+.picker {
+  position: absolute;
+  top: calc(100% + $spacing-2);
+  left: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  padding: $spacing-3;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pickerSelects {
+  display: flex;
+  gap: $spacing-2;
+}
+
+.select {
+  padding: $spacing-2 $spacing-3;
+  font-size: $font-size-sm;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+.confirmButton {
+  padding: $spacing-2 $spacing-4;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: white;
+  background-color: var(--color-primary);
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-primary-dark);
+  }
+}
+
+// 우측 아이콘 섹션
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border-radius: $radius-md;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+  }
+
+  &.active {
+    color: var(--color-primary);
+    background-color: rgba(99, 102, 241, 0.1);
+  }
+}
+
+// 검색 모드
+.searchMode {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  flex: 1;
+}
+
+.searchIcon {
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  padding: $spacing-2;
+  font-size: $font-size-base;
+  color: var(--color-text-primary);
+  background: transparent;
+  border: none;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border-radius: $radius-full;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+  }
+}
