@@ -1,25 +1,19 @@
 @use '../../../styles/tokens' as *;
 
-.container {
+.content {
   display: flex;
   flex-direction: column;
-  gap: $spacing-6;
-}
-
-.title {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-semibold;
-  color: var(--color-text-primary);
+  gap: $spacing-4;
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: $spacing-3;
+  gap: $spacing-2;
 }
 
 .sectionTitle {
-  font-size: $font-size-sm;
+  font-size: $font-size-xxs;
   font-weight: $font-weight-medium;
   color: var(--color-text-tertiary);
   text-transform: uppercase;
@@ -28,7 +22,6 @@
 
 .card {
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: $radius-lg;
   overflow: hidden;
 }
@@ -37,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-4;
+  padding: $spacing-3;
   border-bottom: 1px solid var(--color-border);
 
   &:last-child {
@@ -46,23 +39,30 @@
 }
 
 .itemLabel {
-  font-size: $font-size-base;
+  font-size: $font-size-xs;
   color: var(--color-text-primary);
 }
 
-.itemValue {
-  font-size: $font-size-sm;
+.select {
+  font-size: $font-size-xs;
   color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  text-align: right;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .logoutButton {
   width: 100%;
-  padding: $spacing-4;
-  font-size: $font-size-base;
+  padding: $spacing-3;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   color: var(--color-error);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: $radius-lg;
   transition: background-color 0.2s ease;
 

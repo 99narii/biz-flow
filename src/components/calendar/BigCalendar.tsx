@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay, addMonths, subMonths } from "date-fns";
 import { ko } from "date-fns/locale";
 import { useScheduleStore } from "@/stores/useScheduleStore";
 import { useSwipe } from "@/hooks/useSwipe";
-import CalendarToolbar, { FilterMode } from "./CalendarToolbar";
+import CalendarToolbar from "./CalendarToolbar";
 import type { CalendarEvent, ScheduleWithCategories } from "@/types/schedule";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./BigCalendar.module.scss";
@@ -62,6 +63,7 @@ interface BigCalendarProps {
 }
 
 export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
+  const router = useRouter();
   const {
     schedules,
     events,
@@ -75,7 +77,6 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
   } = useScheduleStore();
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [showFinanceOnly, setShowFinanceOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -113,6 +114,21 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     if (showFinanceOnly) {
       filtered = filtered.filter((s) => s.has_finance && s.amount);
     }
+
+    // 시간순 정렬 (날짜 + 시간)
+    filtered = [...filtered].sort((a, b) => {
+      // 날짜 비교
+      const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
+      if (dateCompare !== 0) return dateCompare;
+
+      // 시간 비교 (HH:mm:ss 형식을 분 단위로 변환)
+      const [aHours, aMinutes] = a.schedule_time.split(":").map(Number);
+      const [bHours, bMinutes] = b.schedule_time.split(":").map(Number);
+      const aTimeValue = aHours * 60 + aMinutes;
+      const bTimeValue = bHours * 60 + bMinutes;
+
+      return aTimeValue - bTimeValue;
+    });
 
     // 이벤트로 변환
     return filtered.map((schedule) => {
@@ -164,7 +180,12 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
       filtered = filtered.filter((s) => s.has_finance && s.amount);
     }
 
-    return filtered;
+    // 시간순 정렬
+    return [...filtered].sort((a, b) => {
+      const [aHours, aMinutes] = a.schedule_time.split(":").map(Number);
+      const [bHours, bMinutes] = b.schedule_time.split(":").map(Number);
+      return (aHours * 60 + aMinutes) - (bHours * 60 + bMinutes);
+    });
   }, [schedules, selectedDate, searchQuery, showFinanceOnly]);
 
   const handleNavigate = useCallback(
@@ -198,6 +219,11 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
 
   const handleSelectSlot = useCallback(({ start }: { start: Date }) => {
     setSelectedDate(start);
+  }, []);
+
+  // 날짜 클릭 (빈 칸 포함)
+  const handleDrillDown = useCallback((date: Date) => {
+    setSelectedDate(date);
   }, []);
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
@@ -259,8 +285,6 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
       <CalendarToolbar
         date={currentDate}
         onNavigate={handleNavigate}
-        filterMode={filterMode}
-        onFilterChange={setFilterMode}
         showFinanceOnly={showFinanceOnly}
         onFinanceToggle={() => setShowFinanceOnly(!showFinanceOnly)}
         searchQuery={searchQuery}
@@ -278,6 +302,8 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
           onNavigate={handleNavigate}
           onSelectEvent={handleSelectEvent}
           onSelectSlot={handleSelectSlot}
+          onDrillDown={handleDrillDown}
+          drilldownView={null}
           eventPropGetter={eventStyleGetter}
           dayPropGetter={dayPropGetter}
           selectable
@@ -303,21 +329,47 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
 
         <div className={styles.scheduleListContent}>
           {selectedDateSchedules.length === 0 ? (
-            <p className={styles.emptyText}>일정이 없습니다</p>
+            <button
+              className={styles.addScheduleButton}
+              onClick={() => router.push(`/calendar/new?date=${format(selectedDate, "yyyy-MM-dd")}`)}
+            >
+              + 등록하기
+            </button>
           ) : (
-            selectedDateSchedules.map((schedule) => (
-              <div
-                key={schedule.id}
-                className={styles.scheduleItem}
-                style={{
-                  borderLeftColor: getScheduleItemColor(schedule),
-                }}
-              >
-                <span className={styles.scheduleTitle}>
-                  {formatEventTitle(schedule, showFinanceOnly)}
-                </span>
-              </div>
-            ))
+            selectedDateSchedules.map((schedule) => {
+              const time = schedule.schedule_time.slice(0, 5);
+              const hasAmount = schedule.has_finance && schedule.amount;
+              const amountText = hasAmount
+                ? `${schedule.finance_type === "income" ? "+" : "-"}${new Intl.NumberFormat("ko-KR").format(schedule.amount!)}원`
+                : null;
+
+              return (
+                <button
+                  key={schedule.id}
+                  className={styles.scheduleItem}
+                  style={{
+                    borderLeftColor: getScheduleItemColor(schedule),
+                  }}
+                  onClick={() => router.push(`/calendar/${schedule.id}`)}
+                >
+                  <span className={styles.scheduleTime}>{time}</span>
+                  <div className={styles.scheduleInfo}>
+                    <span className={styles.scheduleTitle}>{schedule.title}</span>
+                    {hasAmount && (
+                      <span
+                        className={`${styles.scheduleAmount} ${
+                          schedule.finance_type === "income"
+                            ? styles.income
+                            : styles.expense
+                        }`}
+                      >
+                        {amountText}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })
           )}
         </div>
       </div>

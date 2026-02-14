@@ -1,0 +1,63 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--tabbar-height) - var(--safe-area-bottom));
+  background-color: var(--color-bg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-2 $spacing-4;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+
+  @include md {
+    padding: $spacing-3 $spacing-6;
+  }
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-primary);
+  background: transparent;
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+  }
+}
+
+.title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+}
+
+.headerSpacer {
+  width: 36px;
+}
+
+.rightAction {
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+}
+
+.content {
+  flex: 1;
+  padding: $spacing-4;
+
+  @include md {
+    padding: $spacing-6;
+  }
+}

@@ -1,7 +1,11 @@
+import PageLayout from "@/components/layout/PageLayout";
+
 export default function MemosPage() {
   return (
-    <div>
-      <h1>메모</h1>
-    </div>
+    <PageLayout title="메모" showBackButton={false}>
+      <div>
+        <p>메모 페이지 준비 중입니다.</p>
+      </div>
+    </PageLayout>
   );
 }

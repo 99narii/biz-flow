@@ -71,8 +71,7 @@
 
 // 선택된 날짜 스타일
 .selectedDay {
-  background-color: var(--color-primary-light) !important;
-  opacity: 0.3;
+  background-color: rgba(99, 102, 241, 0.15) !important;
 }
 
 // 하단 일정 리스트
@@ -117,24 +116,89 @@
   padding: $spacing-2;
 }
 
+.addScheduleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: $spacing-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: var(--color-primary);
+  background-color: rgba(99, 102, 241, 0.1);
+  border: 1px dashed var(--color-primary);
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(99, 102, 241, 0.2);
+  }
+}
+
 .scheduleItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  width: 100%;
   padding: $spacing-1-5 $spacing-2;
+  border: none;
   border-left: 3px solid var(--color-primary);
   background-color: var(--color-bg-secondary);
   border-radius: 0 $radius-sm $radius-sm 0;
   margin-bottom: $spacing-2;
-  font-weight: $font-weight-medium;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
 
   &:last-child {
     margin-bottom: 0;
   }
+
+  &:hover {
+    background-color: var(--color-border);
+  }
+
+  &:active {
+    background-color: var(--color-border);
+  }
+}
+
+.scheduleTime {
+  flex-shrink: 0;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-secondary);
+  min-width: 36px;
+}
+
+.scheduleInfo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  min-width: 0;
 }
 
 .scheduleTitle {
   font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block;
+}
+
+.scheduleAmount {
+  flex-shrink: 0;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+
+  &.income {
+    color: #22C55E;
+  }
+
+  &.expense {
+    color: #EF4444;
+  }
 }

@@ -1,0 +1,144 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+// 헤더 액션 버튼 (ScheduleEditForm에서 사용)
+.deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-error);
+  background: transparent;
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.loadingWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+
+.error {
+  padding: $spacing-2;
+  font-size: $font-size-xs;
+  color: var(--color-error);
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: $radius-md;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-3;
+}
+
+.label {
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-tertiary);
+}
+
+.required {
+  color: var(--color-error);
+}
+
+.input,
+.select,
+.textarea {
+  padding: $spacing-2 $spacing-3;
+  font-size: $font-size-xs;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  transition: border-color 0.2s ease;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkboxField {
+  padding: $spacing-1 0;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-xs;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.financeSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  padding: $spacing-3;
+  background-color: var(--color-surface);
+  border-radius: $radius-md;
+}
+
+.submitButton {
+  padding: $spacing-3;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: white;
+  background-color: var(--color-primary);
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+  margin-top: $spacing-2;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

@@ -1,0 +1,240 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+// 헤더 액션 버튼
+.editButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border-radius: $radius-md;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+  }
+}
+
+.deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-error);
+  background: transparent;
+  border-radius: $radius-md;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: $font-size-xs;
+  color: var(--color-error);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+
+// 제목 섹션
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  padding: $spacing-3;
+  background-color: var(--color-surface);
+  border-radius: $radius-lg;
+}
+
+.categoryBadge {
+  align-self: flex-start;
+  padding: $spacing-1 $spacing-2;
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-medium;
+  color: white;
+  border-radius: $radius-full;
+}
+
+.title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+// 정보 카드
+.infoCard {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-3;
+
+  & + & {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.infoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-text-tertiary);
+  background-color: var(--color-bg-secondary);
+  border-radius: $radius-md;
+}
+
+.infoContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: $font-size-xxs;
+  color: var(--color-text-tertiary);
+}
+
+.infoValue {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-primary);
+}
+
+// 금액 카드
+.financeCard {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  padding: $spacing-3;
+  background-color: var(--color-surface);
+  border-radius: $radius-lg;
+}
+
+.financeHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-secondary);
+}
+
+.financeContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.financeType {
+  display: flex;
+}
+
+.financeTypeBadge {
+  padding: $spacing-1 $spacing-2;
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-sm;
+
+  &.income {
+    color: #22C55E;
+    background-color: rgba(34, 197, 94, 0.1);
+  }
+
+  &.expense {
+    color: #EF4444;
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+
+  &.savings {
+    color: #3B82F6;
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+}
+
+.financeAmount {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+
+  &.income {
+    color: #22C55E;
+  }
+
+  &.expense {
+    color: #EF4444;
+  }
+
+  &.savings {
+    color: #3B82F6;
+  }
+}
+
+.financeCategory {
+  font-size: $font-size-xxs;
+  color: var(--color-text-tertiary);
+  padding-top: $spacing-1;
+  border-top: 1px solid var(--color-border);
+}
+
+// 메모 카드
+.memoCard {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  padding: $spacing-3;
+  background-color: var(--color-surface);
+  border-radius: $radius-lg;
+}
+
+.memoHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: var(--color-text-secondary);
+}
+
+.memoContent {
+  font-size: $font-size-xs;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

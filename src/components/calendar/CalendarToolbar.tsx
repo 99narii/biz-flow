@@ -1,18 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Calendar, Wallet, Search, X, ChevronDown } from "lucide-react";
+import { Calendar, Wallet, Search, X, ChevronDown, Plus } from "lucide-react";
 import styles from "./CalendarToolbar.module.scss";
-
-export type FilterMode = "all" | "schedule" | "finance";
 
 interface CalendarToolbarProps {
   date: Date;
   onNavigate: (date: Date) => void;
-  filterMode: FilterMode;
-  onFilterChange: (mode: FilterMode) => void;
   showFinanceOnly: boolean;
   onFinanceToggle: () => void;
   searchQuery: string;
@@ -24,8 +21,6 @@ interface CalendarToolbarProps {
 export default function CalendarToolbar({
   date,
   onNavigate,
-  filterMode,
-  onFilterChange,
   showFinanceOnly,
   onFinanceToggle,
   searchQuery,
@@ -33,6 +28,7 @@ export default function CalendarToolbar({
   isSearchOpen,
   onSearchToggle,
 }: CalendarToolbarProps) {
+  const router = useRouter();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(date.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(date.getMonth() + 1);
@@ -159,26 +155,36 @@ export default function CalendarToolbar({
 
       {/* 우측: 필터 아이콘들 */}
       <div className={styles.rightSection}>
-        <button
-          className={`${styles.iconButton} ${filterMode !== "all" ? styles.active : ""}`}
-          onClick={() => onFilterChange(filterMode === "all" ? "schedule" : "all")}
-          title="일정별 필터"
-        >
-          <Calendar size={20} />
-        </button>
-        <button
-          className={`${styles.iconButton} ${showFinanceOnly ? styles.active : ""}`}
-          onClick={onFinanceToggle}
-          title="금액만 보기"
-        >
-          <Wallet size={20} />
-        </button>
+        {/* 스위치 박스: 일정/가계부 */}
+        <div className={styles.switchBox}>
+          <button
+            className={`${styles.switchButton} ${!showFinanceOnly ? styles.active : ""}`}
+            onClick={() => showFinanceOnly && onFinanceToggle()}
+            title="일정 보기"
+          >
+            <Calendar size={18} />
+          </button>
+          <button
+            className={`${styles.switchButton} ${showFinanceOnly ? styles.active : ""}`}
+            onClick={() => !showFinanceOnly && onFinanceToggle()}
+            title="가계부 보기"
+          >
+            <Wallet size={18} />
+          </button>
+        </div>
         <button
           className={styles.iconButton}
           onClick={onSearchToggle}
           title="검색"
         >
           <Search size={20} />
+        </button>
+        <button
+          className={`${styles.iconButton} ${styles.addButton}`}
+          onClick={() => router.push("/calendar/new")}
+          title="일정 등록"
+        >
+          <Plus size={20} />
         </button>
       </div>
     </div>
