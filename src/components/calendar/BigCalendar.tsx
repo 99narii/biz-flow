@@ -81,18 +81,18 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
   const [showFinanceOnly, setShowFinanceOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const pullStartY = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // 선택된 날짜 문자열 (최적화용)
   const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
 
-  // 초기 데이터 설정
+  // 데이터 불러오기 - 페이지 진입 시마다 refetch
   useEffect(() => {
-    if (initialSchedules && initialSchedules.length > 0) {
-      setSchedules(initialSchedules);
-    } else {
-      fetchSchedules(currentYear, currentMonth);
-    }
-  }, []);
+    fetchSchedules(currentYear, currentMonth);
+  }, [currentYear, currentMonth, fetchSchedules]);
 
   const currentDate = useMemo(
     () => new Date(currentYear, currentMonth - 1, 1),
@@ -225,64 +225,64 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     onSwipeRight: handleSwipeRight,
   });
 
-  // 터치 상태 추적
-  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  // Pull-to-refresh 핸들러
+  const PULL_THRESHOLD = 80;
+
+  const handlePullStart = useCallback((e: React.TouchEvent) => {
+    // 스크롤이 맨 위에 있을 때만 pull-to-refresh 시작
+    if (containerRef.current && containerRef.current.scrollTop === 0) {
+      pullStartY.current = e.touches[0].clientY;
+    }
+  }, []);
+
+  const handlePullMove = useCallback((e: React.TouchEvent) => {
+    if (pullStartY.current === null || refreshing) return;
+
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - pullStartY.current;
+
+    // 아래로 당기는 경우만 처리
+    if (distance > 0) {
+      // 최대 120px까지만 허용
+      setPullDistance(Math.min(distance * 0.5, 120));
+    }
+  }, [refreshing]);
+
+  const handlePullEnd = useCallback(async () => {
+    if (pullStartY.current === null) return;
+
+    if (pullDistance >= PULL_THRESHOLD && !refreshing) {
+      setRefreshing(true);
+      setPullDistance(60); // 새로고침 중 표시 위치
+
+      await fetchSchedules(currentYear, currentMonth);
+
+      setRefreshing(false);
+    }
+
+    setPullDistance(0);
+    pullStartY.current = null;
+  }, [pullDistance, refreshing, fetchSchedules, currentYear, currentMonth]);
+
   // 더블클릭/더블탭 감지용
   const lastTapRef = useRef<{ date: string; time: number } | null>(null);
-  // 중복 이벤트 방지용
-  const lastEventTimeRef = useRef<number>(0);
 
-  // 날짜 선택 핸들러 - 즉시 반응하도록 최적화
+  // 날짜 선택 핸들러
   const handleDateSelect = useCallback((date: Date) => {
     setSelectedDate(date);
   }, []);
 
-  // 날짜 계산 헬퍼 함수
-  const getClickedDate = useCallback(
-    (target: HTMLElement): Date | null => {
-      const dayBg = target.closest('.rbc-day-bg') as HTMLElement;
-      if (!dayBg) return null;
-
-      const rowBg = dayBg.closest('.rbc-row-bg');
-      const monthRow = dayBg.closest('.rbc-month-row');
-      if (!rowBg || !monthRow) return null;
-
-      const dayIndex = Array.from(rowBg.children).indexOf(dayBg);
-      const monthView = monthRow.closest('.rbc-month-view');
-      if (!monthView) return null;
-
-      const allRows = Array.from(monthView.querySelectorAll('.rbc-month-row'));
-      const rowIndex = allRows.indexOf(monthRow);
-
-      const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1);
-      const startDayOfWeek = firstDayOfMonth.getDay();
-
-      const dayOffset = rowIndex * 7 + dayIndex - startDayOfWeek;
-      return new Date(currentYear, currentMonth - 1, 1 + dayOffset);
-    },
-    [currentYear, currentMonth]
-  );
-
-  // 탭/클릭 처리 (더블탭 시 등록 페이지로 이동)
-  const handleTapOnDate = useCallback(
-    (clickedDate: Date) => {
+  // 날짜 선택/더블탭 처리 (단순화)
+  const handleDateTap = useCallback(
+    (date: Date) => {
       const now = Date.now();
-      const dateStr = format(clickedDate, "yyyy-MM-dd");
+      const dateStr = format(date, "yyyy-MM-dd");
 
-      // 중복 이벤트 방지 (100ms 이내 동일 날짜 이벤트 무시)
-      if (
-        now - lastEventTimeRef.current < 100 &&
-        lastTapRef.current?.date === dateStr
-      ) {
-        return;
-      }
-      lastEventTimeRef.current = now;
-
-      // 더블탭 감지: 같은 날짜를 500ms 이내에 다시 탭
+      // 더블탭 감지: 같은 날짜를 400ms 이내에 다시 탭
       if (
         lastTapRef.current &&
         lastTapRef.current.date === dateStr &&
-        now - lastTapRef.current.time < 500
+        now - lastTapRef.current.time < 400
       ) {
         // 더블탭 - 등록 페이지로 이동
         lastTapRef.current = null;
@@ -292,27 +292,20 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
 
       // 첫 번째 탭 또는 다른 날짜 탭 - 날짜 선택
       lastTapRef.current = { date: dateStr, time: now };
-      handleDateSelect(clickedDate);
+      handleDateSelect(date);
     },
     [handleDateSelect, router]
   );
 
-  // react-big-calendar에서 처리되면 wrapper에서 중복 처리 방지
-  const handledByCalendarRef = useRef<boolean>(false);
-
+  // react-big-calendar 슬롯 선택 핸들러
   const handleSelectSlot = useCallback(({ start }: { start: Date }) => {
-    handledByCalendarRef.current = true;
-    handleTapOnDate(start);
-    // 다음 틱에서 리셋
-    setTimeout(() => { handledByCalendarRef.current = false; }, 0);
-  }, [handleTapOnDate]);
+    handleDateTap(start);
+  }, [handleDateTap]);
 
   // 날짜 클릭 (빈 칸 포함)
   const handleDrillDown = useCallback((date: Date) => {
-    handledByCalendarRef.current = true;
-    handleTapOnDate(date);
-    setTimeout(() => { handledByCalendarRef.current = false; }, 0);
-  }, [handleTapOnDate]);
+    handleDateTap(date);
+  }, [handleDateTap]);
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
     handleDateSelect(event.start);
@@ -350,58 +343,6 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     return schedule.schedule_category?.color || "#6366F1";
   };
 
-  // 캘린더 클릭 핸들러 - 빈 칸도 클릭 가능하도록 (react-big-calendar에서 처리 안 된 경우만)
-  const handleCalendarClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      // react-big-calendar에서 이미 처리했으면 무시
-      if (handledByCalendarRef.current) return;
-
-      const clickedDate = getClickedDate(e.target as HTMLElement);
-      if (clickedDate) {
-        handleTapOnDate(clickedDate);
-      }
-    },
-    [getClickedDate, handleTapOnDate]
-  );
-
-  // 캘린더 터치 핸들러
-  const handleCalendarTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    const touch = e.touches[0];
-    touchStartRef.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-      time: Date.now(),
-    };
-  }, []);
-
-  const handleCalendarTouchEnd = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      if (!touchStartRef.current) return;
-
-      // react-big-calendar에서 이미 처리했으면 무시
-      if (handledByCalendarRef.current) {
-        touchStartRef.current = null;
-        return;
-      }
-
-      const touch = e.changedTouches[0];
-      const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
-      const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-      const deltaTime = Date.now() - touchStartRef.current.time;
-
-      // 탭: 이동 거리가 15px 미만이고 300ms 이내
-      if (deltaX < 15 && deltaY < 15 && deltaTime < 300) {
-        const clickedDate = getClickedDate(e.target as HTMLElement);
-        if (clickedDate) {
-          handleTapOnDate(clickedDate);
-        }
-      }
-
-      touchStartRef.current = null;
-    },
-    [getClickedDate, handleTapOnDate]
-  );
-
   if (error) {
     return (
       <div className={styles.errorWrapper}>
@@ -417,7 +358,31 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
   }
 
   return (
-    <div className={styles.container}>
+    <div
+      ref={containerRef}
+      className={styles.container}
+      onTouchStart={handlePullStart}
+      onTouchMove={handlePullMove}
+      onTouchEnd={handlePullEnd}
+    >
+      {/* Pull-to-refresh 표시 */}
+      {(pullDistance > 0 || refreshing) && (
+        <div
+          className={styles.pullIndicator}
+          style={{ height: refreshing ? 60 : pullDistance }}
+        >
+          <div className={`${styles.pullSpinner} ${refreshing ? styles.spinning : ""}`}>
+            {refreshing ? (
+              <Spinner size="sm" />
+            ) : (
+              <span style={{ opacity: pullDistance / PULL_THRESHOLD }}>
+                {pullDistance >= PULL_THRESHOLD ? "놓으면 새로고침" : "당겨서 새로고침"}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 커스텀 툴바 */}
       <CalendarToolbar
         date={currentDate}
@@ -433,11 +398,8 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
       <div
         className={styles.calendarWrapper}
         {...swipeHandlers}
-        onClick={handleCalendarClick}
-        onTouchStart={handleCalendarTouchStart}
-        onTouchEnd={handleCalendarTouchEnd}
       >
-        {loading && <div className={styles.loadingOverlay}><Spinner size="lg" /></div>}
+        {loading && !refreshing && <div className={styles.loadingOverlay}><Spinner size="lg" /></div>}
         <Calendar
           localizer={localizer}
           events={filteredEvents}

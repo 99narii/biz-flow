@@ -6,10 +6,34 @@
   flex-direction: column;
   height: calc(100vh - var(--tabbar-height) - var(--safe-area-bottom));
   background-color: var(--color-surface);
+  overflow: hidden;
 
   @include md {
     padding-left: $spacing-4;
     padding-right: $spacing-4;
+  }
+}
+
+// Pull-to-refresh 표시
+.pullIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-bg-secondary);
+  transition: height 0.15s ease-out;
+}
+
+.pullSpinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+
+  &.spinning {
+    animation: none;
   }
 }
 

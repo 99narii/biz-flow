@@ -126,29 +126,71 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
   },
 
   addSchedule: (schedule) => {
-    const { schedules } = get();
-    const newSchedules = [...schedules, schedule].sort((a, b) => {
-      const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
-      if (dateCompare !== 0) return dateCompare;
-      const aTime = a.schedule_time || "00:00";
-      const bTime = b.schedule_time || "00:00";
-      return aTime.localeCompare(bTime);
-    });
-    const events = newSchedules.map(scheduleToEvent);
-    set({ schedules: newSchedules, events });
-  },
+    const { schedules, currentYear, currentMonth } = get();
 
-  updateSchedule: (schedule) => {
-    const { schedules } = get();
-    const newSchedules = schedules
-      .map((s) => (s.id === schedule.id ? schedule : s))
-      .sort((a, b) => {
+    // 현재 월 범위 확인
+    const scheduleDate = new Date(schedule.schedule_date);
+    const scheduleYear = scheduleDate.getFullYear();
+    const scheduleMonth = scheduleDate.getMonth() + 1;
+
+    // 현재 보고 있는 월과 같은 경우에만 추가
+    if (scheduleYear === currentYear && scheduleMonth === currentMonth) {
+      const newSchedules = [...schedules, schedule].sort((a, b) => {
         const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
         if (dateCompare !== 0) return dateCompare;
         const aTime = a.schedule_time || "00:00";
         const bTime = b.schedule_time || "00:00";
         return aTime.localeCompare(bTime);
       });
+      const events = newSchedules.map(scheduleToEvent);
+      set({ schedules: newSchedules, events });
+    }
+  },
+
+  updateSchedule: (schedule) => {
+    const { schedules, currentYear, currentMonth } = get();
+
+    // 현재 월 범위 확인
+    const scheduleDate = new Date(schedule.schedule_date);
+    const scheduleYear = scheduleDate.getFullYear();
+    const scheduleMonth = scheduleDate.getMonth() + 1;
+    const isInCurrentMonth = scheduleYear === currentYear && scheduleMonth === currentMonth;
+
+    // 기존 스케줄 찾기
+    const existingSchedule = schedules.find(s => s.id === schedule.id);
+
+    let newSchedules: ScheduleWithCategories[];
+
+    if (existingSchedule) {
+      if (isInCurrentMonth) {
+        // 현재 월에 있는 스케줄 업데이트
+        newSchedules = schedules
+          .map((s) => (s.id === schedule.id ? schedule : s))
+          .sort((a, b) => {
+            const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
+            if (dateCompare !== 0) return dateCompare;
+            const aTime = a.schedule_time || "00:00";
+            const bTime = b.schedule_time || "00:00";
+            return aTime.localeCompare(bTime);
+          });
+      } else {
+        // 날짜가 다른 월로 변경된 경우 현재 목록에서 제거
+        newSchedules = schedules.filter(s => s.id !== schedule.id);
+      }
+    } else if (isInCurrentMonth) {
+      // 새로 현재 월로 들어온 경우 추가
+      newSchedules = [...schedules, schedule].sort((a, b) => {
+        const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
+        if (dateCompare !== 0) return dateCompare;
+        const aTime = a.schedule_time || "00:00";
+        const bTime = b.schedule_time || "00:00";
+        return aTime.localeCompare(bTime);
+      });
+    } else {
+      // 현재 월과 관련 없음
+      return;
+    }
+
     const events = newSchedules.map(scheduleToEvent);
     set({ schedules: newSchedules, events });
   },

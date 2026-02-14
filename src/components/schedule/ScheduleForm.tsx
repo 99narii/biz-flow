@@ -49,10 +49,42 @@ export default function ScheduleForm() {
     memo: "",
   });
 
+  // 기본 카테고리 생성
+  const createDefaultCategories = async (supabase: ReturnType<typeof createClient>, userId: string) => {
+    const DEFAULT_SCHEDULE_CATEGORIES = [
+      { name: "업무", color: "#6366F1", sort_order: 1 },
+      { name: "미팅", color: "#8B5CF6", sort_order: 2 },
+      { name: "개인", color: "#EC4899", sort_order: 3 },
+      { name: "기타", color: "#94A3B8", sort_order: 4 },
+    ];
+
+    const DEFAULT_FINANCE_CATEGORIES = [
+      { name: "프로젝트", type: "income", sort_order: 1 },
+      { name: "용역", type: "income", sort_order: 2 },
+      { name: "기타수입", type: "income", sort_order: 3 },
+      { name: "경비", type: "expense", sort_order: 1 },
+      { name: "식비", type: "expense", sort_order: 2 },
+      { name: "교통비", type: "expense", sort_order: 3 },
+      { name: "기타지출", type: "expense", sort_order: 4 },
+    ];
+
+    await Promise.all([
+      supabase.from("schedule_categories").insert(
+        DEFAULT_SCHEDULE_CATEGORIES.map(cat => ({ ...cat, user_id: userId }))
+      ),
+      supabase.from("finance_categories").insert(
+        DEFAULT_FINANCE_CATEGORIES.map(cat => ({ ...cat, user_id: userId }))
+      ),
+    ]);
+  };
+
   // 카테고리 불러오기
   useEffect(() => {
     const fetchCategories = async () => {
       const supabase = createClient();
+
+      // 현재 사용자 확인
+      const { data: userData } = await supabase.auth.getUser();
 
       const [scheduleRes, financeRes] = await Promise.all([
         supabase
@@ -64,6 +96,33 @@ export default function ScheduleForm() {
           .select("*")
           .order("sort_order", { ascending: true }),
       ]);
+
+      // 카테고리가 없으면 기본 카테고리 생성
+      if (userData.user && (!scheduleRes.data || scheduleRes.data.length === 0)) {
+        await createDefaultCategories(supabase, userData.user.id);
+        // 다시 불러오기
+        const [newScheduleRes, newFinanceRes] = await Promise.all([
+          supabase
+            .from("schedule_categories")
+            .select("*")
+            .order("sort_order", { ascending: true }),
+          supabase
+            .from("finance_categories")
+            .select("*")
+            .order("sort_order", { ascending: true }),
+        ]);
+
+        if (newScheduleRes.data) {
+          setScheduleCategories(newScheduleRes.data);
+          if (newScheduleRes.data.length > 0) {
+            setFormData(prev => ({ ...prev, schedule_category_id: newScheduleRes.data[0].id }));
+          }
+        }
+        if (newFinanceRes.data) {
+          setFinanceCategories(newFinanceRes.data);
+        }
+        return;
+      }
 
       if (scheduleRes.data) {
         setScheduleCategories(scheduleRes.data);
@@ -128,7 +187,7 @@ export default function ScheduleForm() {
         title: formData.title,
         schedule_date: formData.schedule_date,
         schedule_time: formData.schedule_time ? formData.schedule_time + ":00" : null,
-        schedule_category_id: formData.schedule_category_id,
+        schedule_category_id: formData.schedule_category_id || null,
         has_finance: formData.has_finance,
         finance_type: formData.has_finance && formData.finance_type ? formData.finance_type : null,
         amount: formData.has_finance && formData.amount ? Number(formData.amount) : null,
@@ -136,6 +195,8 @@ export default function ScheduleForm() {
         is_receivable: formData.has_finance ? formData.is_receivable : false,
         memo: formData.memo || null,
       };
+
+      console.log("Creating schedule:", scheduleData);
 
       const { data, error: insertError } = await supabase
         .from("schedules")
@@ -148,6 +209,7 @@ export default function ScheduleForm() {
         .single();
 
       if (insertError) {
+        console.error("Insert error:", insertError);
         throw new Error(insertError.message);
       }
 
