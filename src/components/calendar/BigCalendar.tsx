@@ -223,19 +223,84 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     onSwipeRight: handleSwipeRight,
   });
 
+  // 터치 상태 추적
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  // 더블클릭/더블탭 감지용
+  const lastTapRef = useRef<{ date: string; time: number } | null>(null);
+  // 중복 이벤트 방지용
+  const lastEventTimeRef = useRef<number>(0);
+
   // 날짜 선택 핸들러 - 즉시 반응하도록 최적화
   const handleDateSelect = useCallback((date: Date) => {
     setSelectedDate(date);
   }, []);
 
+  // 날짜 계산 헬퍼 함수
+  const getClickedDate = useCallback(
+    (target: HTMLElement): Date | null => {
+      const dayBg = target.closest('.rbc-day-bg') as HTMLElement;
+      if (!dayBg) return null;
+
+      const rowBg = dayBg.closest('.rbc-row-bg');
+      const monthRow = dayBg.closest('.rbc-month-row');
+      if (!rowBg || !monthRow) return null;
+
+      const dayIndex = Array.from(rowBg.children).indexOf(dayBg);
+      const monthView = monthRow.closest('.rbc-month-view');
+      if (!monthView) return null;
+
+      const allRows = Array.from(monthView.querySelectorAll('.rbc-month-row'));
+      const rowIndex = allRows.indexOf(monthRow);
+
+      const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1);
+      const startDayOfWeek = firstDayOfMonth.getDay();
+
+      const dayOffset = rowIndex * 7 + dayIndex - startDayOfWeek;
+      return new Date(currentYear, currentMonth - 1, 1 + dayOffset);
+    },
+    [currentYear, currentMonth]
+  );
+
+  // 탭/클릭 처리 (더블탭 시 등록 페이지로 이동)
+  const handleTapOnDate = useCallback(
+    (clickedDate: Date) => {
+      const now = Date.now();
+
+      // 중복 이벤트 방지 (50ms 이내 동일 이벤트 무시)
+      if (now - lastEventTimeRef.current < 50) {
+        return;
+      }
+      lastEventTimeRef.current = now;
+
+      const dateStr = format(clickedDate, "yyyy-MM-dd");
+
+      // 더블탭 감지: 같은 날짜를 400ms 이내에 다시 탭
+      if (
+        lastTapRef.current &&
+        lastTapRef.current.date === dateStr &&
+        now - lastTapRef.current.time < 400
+      ) {
+        // 더블탭 - 등록 페이지로 이동
+        lastTapRef.current = null;
+        router.push(`/calendar/new?date=${dateStr}`);
+        return;
+      }
+
+      // 첫 번째 탭 - 날짜 선택
+      lastTapRef.current = { date: dateStr, time: now };
+      handleDateSelect(clickedDate);
+    },
+    [handleDateSelect, router]
+  );
+
   const handleSelectSlot = useCallback(({ start }: { start: Date }) => {
-    handleDateSelect(start);
-  }, [handleDateSelect]);
+    handleTapOnDate(start);
+  }, [handleTapOnDate]);
 
   // 날짜 클릭 (빈 칸 포함)
   const handleDrillDown = useCallback((date: Date) => {
-    handleDateSelect(date);
-  }, [handleDateSelect]);
+    handleTapOnDate(date);
+  }, [handleTapOnDate]);
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
     handleDateSelect(event.start);
@@ -272,62 +337,6 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     }
     return schedule.schedule_category?.color || "#6366F1";
   };
-
-  // 터치 상태 추적
-  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
-  // 더블클릭/더블탭 감지용
-  const lastTapRef = useRef<{ date: string; time: number } | null>(null);
-
-  // 날짜 계산 헬퍼 함수
-  const getClickedDate = useCallback(
-    (target: HTMLElement): Date | null => {
-      const dayBg = target.closest('.rbc-day-bg') as HTMLElement;
-      if (!dayBg) return null;
-
-      const rowBg = dayBg.closest('.rbc-row-bg');
-      const monthRow = dayBg.closest('.rbc-month-row');
-      if (!rowBg || !monthRow) return null;
-
-      const dayIndex = Array.from(rowBg.children).indexOf(dayBg);
-      const monthView = monthRow.closest('.rbc-month-view');
-      if (!monthView) return null;
-
-      const allRows = Array.from(monthView.querySelectorAll('.rbc-month-row'));
-      const rowIndex = allRows.indexOf(monthRow);
-
-      const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1);
-      const startDayOfWeek = firstDayOfMonth.getDay();
-
-      const dayOffset = rowIndex * 7 + dayIndex - startDayOfWeek;
-      return new Date(currentYear, currentMonth - 1, 1 + dayOffset);
-    },
-    [currentYear, currentMonth]
-  );
-
-  // 탭/클릭 처리 (더블탭 시 등록 페이지로 이동)
-  const handleTapOnDate = useCallback(
-    (clickedDate: Date) => {
-      const dateStr = format(clickedDate, "yyyy-MM-dd");
-      const now = Date.now();
-
-      // 더블탭 감지: 같은 날짜를 300ms 이내에 다시 탭
-      if (
-        lastTapRef.current &&
-        lastTapRef.current.date === dateStr &&
-        now - lastTapRef.current.time < 300
-      ) {
-        // 더블탭 - 등록 페이지로 이동
-        lastTapRef.current = null;
-        router.push(`/calendar/new?date=${dateStr}`);
-        return;
-      }
-
-      // 첫 번째 탭 - 날짜 선택
-      lastTapRef.current = { date: dateStr, time: now };
-      handleDateSelect(clickedDate);
-    },
-    [handleDateSelect, router]
-  );
 
   // 캘린더 클릭 핸들러 - 빈 칸도 클릭 가능하도록
   const handleCalendarClick = useCallback(
