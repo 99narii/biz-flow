@@ -250,8 +250,6 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
         opacity: 0.9,
         color: "white",
         border: "none",
-        fontSize: "11px",
-        padding: "1px 4px",
       },
     };
   }, []);

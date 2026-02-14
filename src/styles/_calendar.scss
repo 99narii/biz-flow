@@ -115,11 +115,22 @@
 }
 
 .rbc-event {
-  padding: 0 $spacing-1;
+  padding: 1px $spacing-1;
   font-size: $font-size-xs;
   background-color: var(--color-primary);
   border: none;
   border-radius: $radius-sm;
+  overflow: hidden;
+
+  // xs 이하에서 2줄 높이 확보
+  @media (max-width: $breakpoint-xs) {
+    height: auto !important;
+    min-height: 2.4em !important;
+    max-height: 3em !important;
+    padding: 2px $spacing-1 !important;
+    line-height: 1.2 !important;
+    font-size: $font-size-xxs !important;
+  }
 
   @include md {
     padding: $spacing-1 $spacing-2;
@@ -132,9 +143,20 @@
 
 .rbc-event-content {
   font-size: $font-size-xs;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  @include md {
-    font-size: $font-size-xs;
+  // xs 이하에서 2줄 표시
+  @media (max-width: $breakpoint-xs) {
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    line-height: 1.2 !important;
+    overflow: hidden !important;
+    word-break: break-all;
+    font-size: $font-size-xxs !important;
   }
 }
 
@@ -151,6 +173,23 @@
 
 .rbc-row-segment {
   padding: 0 1px 1px 1px;
+
+  // xs 이하에서 2줄 높이 확보
+  @media (max-width: $breakpoint-xs) {
+    .rbc-event {
+      height: auto !important;
+      min-height: 2.2em !important;
+    }
+  }
+}
+
+// xs 이하에서 이벤트 row 높이 조절
+@media (max-width: $breakpoint-xs) {
+  .rbc-row-content {
+    .rbc-row {
+      min-height: 2.4em;
+    }
+  }
 }
 
 // 커스텀 툴바 사용으로 기본 툴바 숨김
