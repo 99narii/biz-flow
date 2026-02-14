@@ -105,7 +105,7 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
       filtered = filtered.filter(
         (s) =>
           s.title.toLowerCase().includes(query) ||
-          s.description?.toLowerCase().includes(query) ||
+          s.memo?.toLowerCase().includes(query) ||
           s.schedule_category?.name.toLowerCase().includes(query)
       );
     }
@@ -171,7 +171,7 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
       filtered = filtered.filter(
         (s) =>
           s.title.toLowerCase().includes(query) ||
-          s.description?.toLowerCase().includes(query) ||
+          s.memo?.toLowerCase().includes(query) ||
           s.schedule_category?.name.toLowerCase().includes(query)
       );
     }
