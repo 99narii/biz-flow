@@ -122,6 +122,11 @@
   border-radius: $radius-sm;
   overflow: hidden;
 
+  // sm 이하에서 폰트 축소
+  @media (max-width: $breakpoint-sm) {
+    font-size: $font-size-xxs;
+  }
+
   // xs 이하에서 2줄 높이 확보
   @media (max-width: $breakpoint-xs) {
     height: auto !important;
@@ -129,7 +134,6 @@
     max-height: 3em !important;
     padding: 2px $spacing-1 !important;
     line-height: 1.2 !important;
-    font-size: $font-size-xxs !important;
   }
 
   @include md {
@@ -147,6 +151,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
+  // sm 이하에서 폰트 축소
+  @media (max-width: $breakpoint-sm) {
+    font-size: $font-size-xxs;
+  }
+
   // xs 이하에서 2줄 표시
   @media (max-width: $breakpoint-xs) {
     white-space: normal !important;
@@ -156,7 +165,6 @@
     line-height: 1.2 !important;
     overflow: hidden !important;
     word-break: break-all;
-    font-size: $font-size-xxs !important;
   }
 }
 
