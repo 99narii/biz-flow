@@ -23,7 +23,7 @@ interface ScheduleState {
   removeSchedule: (id: string) => void;
 }
 
-// 시간 + 제목 + 금액 포맷
+// 시간 + 제목 + 금액 포맷 todo : 포멧 함수 분리 필요
 function formatEventTitle(schedule: ScheduleWithCategories): string {
   const time = schedule.schedule_time.slice(0, 5); // HH:mm
   let title = `${time} ${schedule.title}`;
