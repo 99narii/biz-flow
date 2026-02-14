@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Pencil, Trash2, Clock, Calendar, Tag, Wallet, FileText } from "lucide-react";
@@ -115,12 +116,13 @@ export default function ScheduleDetail({ scheduleId }: ScheduleDetailProps) {
 
   const headerActions = (
     <>
-      <button
-        onClick={() => router.push(`/calendar/${scheduleId}/edit`)}
+      <Link
+        href={`/calendar/${scheduleId}/edit`}
         className={styles.editButton}
+        prefetch={true}
       >
         <Pencil size={18} />
-      </button>
+      </Link>
       <button
         onClick={handleDelete}
         className={styles.deleteButton}

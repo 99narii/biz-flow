@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay, addMonths, subMonths } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -265,20 +266,22 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
   const handleTapOnDate = useCallback(
     (clickedDate: Date) => {
       const now = Date.now();
+      const dateStr = format(clickedDate, "yyyy-MM-dd");
 
-      // 중복 이벤트 방지 (50ms 이내 동일 이벤트 무시)
-      if (now - lastEventTimeRef.current < 50) {
+      // 중복 이벤트 방지 (100ms 이내 동일 날짜 이벤트 무시)
+      if (
+        now - lastEventTimeRef.current < 100 &&
+        lastTapRef.current?.date === dateStr
+      ) {
         return;
       }
       lastEventTimeRef.current = now;
 
-      const dateStr = format(clickedDate, "yyyy-MM-dd");
-
-      // 더블탭 감지: 같은 날짜를 400ms 이내에 다시 탭
+      // 더블탭 감지: 같은 날짜를 500ms 이내에 다시 탭
       if (
         lastTapRef.current &&
         lastTapRef.current.date === dateStr &&
-        now - lastTapRef.current.time < 400
+        now - lastTapRef.current.time < 500
       ) {
         // 더블탭 - 등록 페이지로 이동
         lastTapRef.current = null;
@@ -286,20 +289,28 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
         return;
       }
 
-      // 첫 번째 탭 - 날짜 선택
+      // 첫 번째 탭 또는 다른 날짜 탭 - 날짜 선택
       lastTapRef.current = { date: dateStr, time: now };
       handleDateSelect(clickedDate);
     },
     [handleDateSelect, router]
   );
 
+  // react-big-calendar에서 처리되면 wrapper에서 중복 처리 방지
+  const handledByCalendarRef = useRef<boolean>(false);
+
   const handleSelectSlot = useCallback(({ start }: { start: Date }) => {
+    handledByCalendarRef.current = true;
     handleTapOnDate(start);
+    // 다음 틱에서 리셋
+    setTimeout(() => { handledByCalendarRef.current = false; }, 0);
   }, [handleTapOnDate]);
 
   // 날짜 클릭 (빈 칸 포함)
   const handleDrillDown = useCallback((date: Date) => {
+    handledByCalendarRef.current = true;
     handleTapOnDate(date);
+    setTimeout(() => { handledByCalendarRef.current = false; }, 0);
   }, [handleTapOnDate]);
 
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
@@ -338,9 +349,12 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     return schedule.schedule_category?.color || "#6366F1";
   };
 
-  // 캘린더 클릭 핸들러 - 빈 칸도 클릭 가능하도록
+  // 캘린더 클릭 핸들러 - 빈 칸도 클릭 가능하도록 (react-big-calendar에서 처리 안 된 경우만)
   const handleCalendarClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
+      // react-big-calendar에서 이미 처리했으면 무시
+      if (handledByCalendarRef.current) return;
+
       const clickedDate = getClickedDate(e.target as HTMLElement);
       if (clickedDate) {
         handleTapOnDate(clickedDate);
@@ -362,6 +376,12 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
   const handleCalendarTouchEnd = useCallback(
     (e: React.TouchEvent<HTMLDivElement>) => {
       if (!touchStartRef.current) return;
+
+      // react-big-calendar에서 이미 처리했으면 무시
+      if (handledByCalendarRef.current) {
+        touchStartRef.current = null;
+        return;
+      }
 
       const touch = e.changedTouches[0];
       const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
@@ -452,12 +472,13 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
 
         <div className={styles.scheduleListContent}>
           {selectedDateSchedules.length === 0 ? (
-            <button
+            <Link
+              href={`/calendar/new?date=${format(selectedDate, "yyyy-MM-dd")}`}
               className={styles.addScheduleButton}
-              onClick={() => router.push(`/calendar/new?date=${format(selectedDate, "yyyy-MM-dd")}`)}
+              prefetch={true}
             >
               + 등록하기
-            </button>
+            </Link>
           ) : (
             selectedDateSchedules.map((schedule) => {
               const time = schedule.schedule_time?.slice(0, 5) || "";
@@ -467,13 +488,14 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
                 : null;
 
               return (
-                <button
+                <Link
                   key={schedule.id}
+                  href={`/calendar/${schedule.id}`}
                   className={styles.scheduleItem}
                   style={{
                     borderLeftColor: getScheduleItemColor(schedule),
                   }}
-                  onClick={() => router.push(`/calendar/${schedule.id}`)}
+                  prefetch={true}
                 >
                   {time && <span className={styles.scheduleTime}>{time}</span>}
                   <div className={styles.scheduleInfo}>
@@ -491,7 +513,7 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
                       </span>
                     )}
                   </div>
-                </button>
+                </Link>
               );
             })
           )}
