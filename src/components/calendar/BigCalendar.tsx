@@ -9,6 +9,7 @@ import { ko } from "date-fns/locale";
 import { useScheduleStore } from "@/stores/useScheduleStore";
 import { useSwipe } from "@/hooks/useSwipe";
 import CalendarToolbar from "./CalendarToolbar";
+import Spinner from "@/components/common/Spinner";
 import type { CalendarEvent, ScheduleWithCategories } from "@/types/schedule";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import styles from "./BigCalendar.module.scss";
@@ -436,7 +437,7 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
         onTouchStart={handleCalendarTouchStart}
         onTouchEnd={handleCalendarTouchEnd}
       >
-        {loading && <div className={styles.loadingOverlay}>로딩 중...</div>}
+        {loading && <div className={styles.loadingOverlay}><Spinner size="lg" /></div>}
         <Calendar
           localizer={localizer}
           events={filteredEvents}

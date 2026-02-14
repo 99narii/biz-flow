@@ -9,6 +9,7 @@ import { Pencil, Trash2, Clock, Calendar, Tag, Wallet, FileText } from "lucide-r
 import { createClient } from "@/lib/supabase/client";
 import { useScheduleStore } from "@/stores/useScheduleStore";
 import PageLayout from "@/components/layout/PageLayout";
+import Spinner from "@/components/common/Spinner";
 import type { ScheduleWithCategories } from "@/types/schedule";
 import styles from "./ScheduleDetail.module.scss";
 
@@ -84,7 +85,9 @@ export default function ScheduleDetail({ scheduleId }: ScheduleDetailProps) {
   if (loading) {
     return (
       <PageLayout title="일정 상세">
-        <div className={styles.loading}>로딩 중...</div>
+        <div className={styles.loading}>
+          <Spinner size="lg" />
+        </div>
       </PageLayout>
     );
   }

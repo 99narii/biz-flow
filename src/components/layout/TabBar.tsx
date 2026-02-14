@@ -65,6 +65,7 @@ export default function TabBar() {
               <Link
                 href={tab.href}
                 className={`${styles.tabItem} ${isActive ? styles.tabItemActive : ""}`}
+                prefetch={true}
               >
                 <span className={styles.tabIcon}>{tab.icon}</span>
                 <span className={styles.tabLabel}>{tab.label}</span>

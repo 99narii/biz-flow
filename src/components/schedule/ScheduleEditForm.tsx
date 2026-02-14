@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useScheduleStore } from "@/stores/useScheduleStore";
 import PageLayout from "@/components/layout/PageLayout";
+import Spinner from "@/components/common/Spinner";
 import type { ScheduleCategory, FinanceCategory, FinanceType, ScheduleWithCategories } from "@/types/schedule";
 import styles from "./ScheduleForm.module.scss";
 
@@ -227,7 +228,9 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
   if (initialLoading) {
     return (
       <PageLayout title="일정 수정">
-        <div className={styles.loadingWrapper}>로딩 중...</div>
+        <div className={styles.loadingWrapper}>
+          <Spinner size="lg" />
+        </div>
       </PageLayout>
     );
   }
