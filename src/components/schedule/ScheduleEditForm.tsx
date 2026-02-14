@@ -19,6 +19,7 @@ interface ScheduleFormData {
   finance_type: FinanceType | "";
   amount: string;
   finance_category_id: string;
+  is_receivable: boolean;
   memo: string;
 }
 
@@ -40,12 +41,13 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
   const [formData, setFormData] = useState<ScheduleFormData>({
     title: "",
     schedule_date: format(new Date(), "yyyy-MM-dd"),
-    schedule_time: format(new Date(), "HH:mm"),
+    schedule_time: "",
     schedule_category_id: "",
     has_finance: false,
     finance_type: "",
     amount: "",
     finance_category_id: "",
+    is_receivable: false,
     memo: "",
   });
 
@@ -86,12 +88,13 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
         setFormData({
           title: schedule.title,
           schedule_date: schedule.schedule_date,
-          schedule_time: schedule.schedule_time.slice(0, 5),
+          schedule_time: schedule.schedule_time?.slice(0, 5) || "",
           schedule_category_id: schedule.schedule_category_id,
           has_finance: schedule.has_finance,
           finance_type: schedule.finance_type || "",
           amount: schedule.amount?.toString() || "",
           finance_category_id: schedule.finance_category_id || "",
+          is_receivable: schedule.is_receivable || false,
           memo: schedule.memo || "",
         });
 
@@ -128,7 +131,7 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
         ...prev,
         [name]: checked,
         ...(name === "has_finance" && !checked
-          ? { finance_type: "", amount: "", finance_category_id: "" }
+          ? { finance_type: "", amount: "", finance_category_id: "", is_receivable: false }
           : {}),
       }));
     } else {
@@ -151,12 +154,13 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
       const scheduleData = {
         title: formData.title,
         schedule_date: formData.schedule_date,
-        schedule_time: formData.schedule_time + ":00",
+        schedule_time: formData.schedule_time ? formData.schedule_time + ":00" : null,
         schedule_category_id: formData.schedule_category_id,
         has_finance: formData.has_finance,
         finance_type: formData.has_finance && formData.finance_type ? formData.finance_type : null,
         amount: formData.has_finance && formData.amount ? Number(formData.amount) : null,
         finance_category_id: formData.has_finance && formData.finance_category_id ? formData.finance_category_id : null,
+        is_receivable: formData.has_finance ? formData.is_receivable : false,
         memo: formData.memo || null,
         updated_at: new Date().toISOString(),
       };
@@ -273,7 +277,7 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
 
           <div className={styles.field}>
             <label htmlFor="schedule_time" className={styles.label}>
-              시간 <span className={styles.required}>*</span>
+              시간
             </label>
             <input
               type="time"
@@ -281,7 +285,6 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
               name="schedule_time"
               value={formData.schedule_time}
               onChange={handleChange}
-              required
               className={styles.input}
             />
           </div>
@@ -356,6 +359,19 @@ export default function ScheduleEditForm({ scheduleId }: ScheduleEditFormProps) 
                 min="0"
                 className={styles.input}
               />
+            </div>
+
+            <div className={styles.checkboxField}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  name="is_receivable"
+                  checked={formData.is_receivable}
+                  onChange={handleChange}
+                  className={styles.checkbox}
+                />
+                <span>미수</span>
+              </label>
             </div>
 
             {formData.finance_type && filteredFinanceCategories.length > 0 && (

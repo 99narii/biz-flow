@@ -18,6 +18,7 @@ interface ScheduleFormData {
   finance_type: FinanceType | "";
   amount: string;
   finance_category_id: string;
+  is_receivable: boolean;
   memo: string;
 }
 
@@ -38,12 +39,13 @@ export default function ScheduleForm() {
   const [formData, setFormData] = useState<ScheduleFormData>({
     title: "",
     schedule_date: initialDate,
-    schedule_time: format(new Date(), "HH:mm"),
+    schedule_time: "",
     schedule_category_id: "",
     has_finance: false,
     finance_type: "",
     amount: "",
     finance_category_id: "",
+    is_receivable: false,
     memo: "",
   });
 
@@ -95,7 +97,7 @@ export default function ScheduleForm() {
         [name]: checked,
         // 금액 체크 해제 시 관련 필드 초기화
         ...(name === "has_finance" && !checked
-          ? { finance_type: "", amount: "", finance_category_id: "" }
+          ? { finance_type: "", amount: "", finance_category_id: "", is_receivable: false }
           : {}),
       }));
     } else {
@@ -125,12 +127,13 @@ export default function ScheduleForm() {
         user_id: userData.user.id,
         title: formData.title,
         schedule_date: formData.schedule_date,
-        schedule_time: formData.schedule_time + ":00",
+        schedule_time: formData.schedule_time ? formData.schedule_time + ":00" : null,
         schedule_category_id: formData.schedule_category_id,
         has_finance: formData.has_finance,
         finance_type: formData.has_finance && formData.finance_type ? formData.finance_type : null,
         amount: formData.has_finance && formData.amount ? Number(formData.amount) : null,
         finance_category_id: formData.has_finance && formData.finance_category_id ? formData.finance_category_id : null,
+        is_receivable: formData.has_finance ? formData.is_receivable : false,
         memo: formData.memo || null,
       };
 
@@ -199,7 +202,7 @@ export default function ScheduleForm() {
 
           <div className={styles.field}>
             <label htmlFor="schedule_time" className={styles.label}>
-              시간 <span className={styles.required}>*</span>
+              시간
             </label>
             <input
               type="time"
@@ -207,7 +210,6 @@ export default function ScheduleForm() {
               name="schedule_time"
               value={formData.schedule_time}
               onChange={handleChange}
-              required
               className={styles.input}
             />
           </div>
@@ -282,6 +284,19 @@ export default function ScheduleForm() {
                 min="0"
                 className={styles.input}
               />
+            </div>
+
+            <div className={styles.checkboxField}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  name="is_receivable"
+                  checked={formData.is_receivable}
+                  onChange={handleChange}
+                  className={styles.checkbox}
+                />
+                <span>미수</span>
+              </label>
             </div>
 
             {formData.finance_type && filteredFinanceCategories.length > 0 && (

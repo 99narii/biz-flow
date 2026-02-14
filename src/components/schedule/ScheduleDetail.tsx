@@ -98,7 +98,7 @@ export default function ScheduleDetail({ scheduleId }: ScheduleDetailProps) {
 
   const dateObj = new Date(schedule.schedule_date);
   const formattedDate = format(dateObj, "yyyy년 M월 d일 (EEEE)", { locale: ko });
-  const formattedTime = schedule.schedule_time.slice(0, 5);
+  const formattedTime = schedule.schedule_time?.slice(0, 5) || null;
 
   const getFinanceTypeLabel = (type: string | null) => {
     switch (type) {
@@ -157,15 +157,17 @@ export default function ScheduleDetail({ scheduleId }: ScheduleDetailProps) {
             </div>
           </div>
 
-          <div className={styles.infoRow}>
-            <div className={styles.infoIcon}>
-              <Clock size={16} />
+          {formattedTime && (
+            <div className={styles.infoRow}>
+              <div className={styles.infoIcon}>
+                <Clock size={16} />
+              </div>
+              <div className={styles.infoContent}>
+                <span className={styles.infoLabel}>시간</span>
+                <span className={styles.infoValue}>{formattedTime}</span>
+              </div>
             </div>
-            <div className={styles.infoContent}>
-              <span className={styles.infoLabel}>시간</span>
-              <span className={styles.infoValue}>{formattedTime}</span>
-            </div>
-          </div>
+          )}
 
           {schedule.schedule_category && (
             <div className={styles.infoRow}>

@@ -77,7 +77,7 @@
 .categoryBadge {
   align-self: flex-start;
   padding: $spacing-1 $spacing-2;
-  font-size: $font-size-xxs;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   color: white;
   border-radius: $radius-full;
@@ -128,7 +128,7 @@
 }
 
 .infoLabel {
-  font-size: $font-size-xxs;
+  font-size: $font-size-xs;
   color: var(--color-text-tertiary);
 }
 
@@ -169,7 +169,7 @@
 
 .financeTypeBadge {
   padding: $spacing-1 $spacing-2;
-  font-size: $font-size-xxs;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
   border-radius: $radius-sm;
 
@@ -207,7 +207,7 @@
 }
 
 .financeCategory {
-  font-size: $font-size-xxs;
+  font-size: $font-size-xs;
   color: var(--color-text-tertiary);
   padding-top: $spacing-1;
   border-top: 1px solid var(--color-border);

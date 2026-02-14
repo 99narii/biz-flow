@@ -7,11 +7,9 @@
   height: calc(100vh - var(--tabbar-height) - var(--safe-area-bottom));
   background-color: var(--color-surface);
 
-  // 태블릿에서 부모 padding 상쇄
   @include md {
-    width: calc(100% + $spacing-6 * 2);
-    margin-left: -$spacing-6;
-    margin-right: -$spacing-6;
+    padding-left: $spacing-4;
+    padding-right: $spacing-4;
   }
 }
 
@@ -20,6 +18,10 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  // GPU 가속
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 
 .loadingOverlay {
@@ -107,6 +109,9 @@
   flex: 1;
   overflow-y: auto;
   padding: $spacing-2;
+  // 스크롤 성능 최적화
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .emptyText {
@@ -181,7 +186,7 @@
 }
 
 .scheduleTitle {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   color: var(--color-text-primary);
   white-space: nowrap;
@@ -191,7 +196,10 @@
 
 .scheduleAmount {
   flex-shrink: 0;
-  font-size: $font-size-xs;
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
 
   &.income {
@@ -201,4 +209,13 @@
   &.expense {
     color: #EF4444;
   }
+}
+
+.receivableBadge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: var(--color-warning);
+  background-color: rgba(245, 158, 11, 0.15);
+  padding: 1px $spacing-1;
+  border-radius: $radius-sm;
 }

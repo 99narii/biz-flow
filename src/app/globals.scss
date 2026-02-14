@@ -5,6 +5,9 @@
 
 html {
   font-size: 16px;
+  // 모바일 터치 성능 최적화
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -15,6 +18,9 @@ body {
   background-color: var(--color-bg);
   min-height: 100vh;
   min-height: 100dvh;
+  // 스크롤 성능 최적화
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 // 스크롤바 스타일링

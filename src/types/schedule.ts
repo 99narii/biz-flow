@@ -29,7 +29,7 @@ export interface Schedule {
   user_id: string;
   title: string;
   schedule_date: string;
-  schedule_time: string;
+  schedule_time: string | null;
   schedule_category_id: string;
   has_finance: boolean;
   finance_type: FinanceType | null;

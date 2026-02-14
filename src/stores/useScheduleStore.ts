@@ -25,8 +25,8 @@ interface ScheduleState {
 
 // 시간 + 제목 + 금액 포맷 todo : 포멧 함수 분리 필요
 function formatEventTitle(schedule: ScheduleWithCategories): string {
-  const time = schedule.schedule_time.slice(0, 5); // HH:mm
-  let title = `${time} ${schedule.title}`;
+  const time = schedule.schedule_time?.slice(0, 5) || ""; // HH:mm
+  let title = time ? `${time} ${schedule.title}` : schedule.title;
 
   if (schedule.has_finance && schedule.amount) {
     const formattedAmount = new Intl.NumberFormat("ko-KR").format(schedule.amount);
@@ -39,7 +39,8 @@ function formatEventTitle(schedule: ScheduleWithCategories): string {
 
 // 스케줄을 캘린더 이벤트로 변환
 function scheduleToEvent(schedule: ScheduleWithCategories): CalendarEvent {
-  const [hours, minutes] = schedule.schedule_time.split(":").map(Number);
+  const time = schedule.schedule_time || "00:00";
+  const [hours, minutes] = time.split(":").map(Number);
   const startDate = new Date(schedule.schedule_date);
   startDate.setHours(hours, minutes, 0, 0);
 
@@ -129,7 +130,9 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     const newSchedules = [...schedules, schedule].sort((a, b) => {
       const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
       if (dateCompare !== 0) return dateCompare;
-      return a.schedule_time.localeCompare(b.schedule_time);
+      const aTime = a.schedule_time || "00:00";
+      const bTime = b.schedule_time || "00:00";
+      return aTime.localeCompare(bTime);
     });
     const events = newSchedules.map(scheduleToEvent);
     set({ schedules: newSchedules, events });
@@ -142,7 +145,9 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
       .sort((a, b) => {
         const dateCompare = a.schedule_date.localeCompare(b.schedule_date);
         if (dateCompare !== 0) return dateCompare;
-        return a.schedule_time.localeCompare(b.schedule_time);
+        const aTime = a.schedule_time || "00:00";
+        const bTime = b.schedule_time || "00:00";
+        return aTime.localeCompare(bTime);
       });
     const events = newSchedules.map(scheduleToEvent);
     set({ schedules: newSchedules, events });
