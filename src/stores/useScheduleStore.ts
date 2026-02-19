@@ -13,6 +13,7 @@ interface ScheduleState {
   error: string | null;
   currentYear: number;
   currentMonth: number;
+  needsRefresh: boolean;
 
   // Actions
   setSchedules: (schedules: ScheduleWithCategories[]) => void;
@@ -21,6 +22,7 @@ interface ScheduleState {
   addSchedule: (schedule: ScheduleWithCategories) => void;
   updateSchedule: (schedule: ScheduleWithCategories) => void;
   removeSchedule: (id: string) => void;
+  setNeedsRefresh: (value: boolean) => void;
 }
 
 // 시간 + 제목 + 금액 포맷 todo : 포멧 함수 분리 필요
@@ -69,6 +71,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
   error: null,
   currentYear: new Date().getFullYear(),
   currentMonth: new Date().getMonth() + 1,
+  needsRefresh: false,
 
   setSchedules: (schedules) => {
     const events = schedules.map(scheduleToEvent);
@@ -77,6 +80,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
 
   setCurrentDate: (year, month) => {
     set({ currentYear: year, currentMonth: month });
+  },
+
+  setNeedsRefresh: (value) => {
+    set({ needsRefresh: value });
   },
 
   fetchSchedules: async (year, month) => {
@@ -119,6 +126,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         loading: false,
         currentYear: year,
         currentMonth: month,
+        needsRefresh: false,
       });
     } catch (err) {
       set({ error: "스케줄을 불러오는데 실패했습니다.", loading: false });
@@ -128,10 +136,8 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
   addSchedule: (schedule) => {
     const { schedules, currentYear, currentMonth } = get();
 
-    // 현재 월 범위 확인
-    const scheduleDate = new Date(schedule.schedule_date);
-    const scheduleYear = scheduleDate.getFullYear();
-    const scheduleMonth = scheduleDate.getMonth() + 1;
+    // 현재 월 범위 확인 (문자열에서 직접 추출하여 시간대 문제 방지)
+    const [scheduleYear, scheduleMonth] = schedule.schedule_date.split("-").map(Number);
 
     // 현재 보고 있는 월과 같은 경우에만 추가
     if (scheduleYear === currentYear && scheduleMonth === currentMonth) {
@@ -145,15 +151,16 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
       const events = newSchedules.map(scheduleToEvent);
       set({ schedules: newSchedules, events });
     }
+
+    // 캘린더 페이지로 돌아갈 때 새로고침 필요 표시
+    set({ needsRefresh: true });
   },
 
   updateSchedule: (schedule) => {
     const { schedules, currentYear, currentMonth } = get();
 
-    // 현재 월 범위 확인
-    const scheduleDate = new Date(schedule.schedule_date);
-    const scheduleYear = scheduleDate.getFullYear();
-    const scheduleMonth = scheduleDate.getMonth() + 1;
+    // 현재 월 범위 확인 (문자열에서 직접 추출하여 시간대 문제 방지)
+    const [scheduleYear, scheduleMonth] = schedule.schedule_date.split("-").map(Number);
     const isInCurrentMonth = scheduleYear === currentYear && scheduleMonth === currentMonth;
 
     // 기존 스케줄 찾기
@@ -187,18 +194,19 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         return aTime.localeCompare(bTime);
       });
     } else {
-      // 현재 월과 관련 없음
+      // 현재 월과 관련 없음 - 새로고침 필요 표시만
+      set({ needsRefresh: true });
       return;
     }
 
     const events = newSchedules.map(scheduleToEvent);
-    set({ schedules: newSchedules, events });
+    set({ schedules: newSchedules, events, needsRefresh: true });
   },
 
   removeSchedule: (id) => {
     const { schedules } = get();
     const newSchedules = schedules.filter((s) => s.id !== id);
     const events = newSchedules.map(scheduleToEvent);
-    set({ schedules: newSchedules, events });
+    set({ schedules: newSchedules, events, needsRefresh: true });
   },
 }));

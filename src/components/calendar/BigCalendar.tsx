@@ -72,6 +72,7 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
     error,
     currentYear,
     currentMonth,
+    needsRefresh,
     setSchedules,
     setCurrentDate,
     fetchSchedules,
@@ -89,10 +90,17 @@ export default function BigCalendar({ initialSchedules }: BigCalendarProps) {
   // 선택된 날짜 문자열 (최적화용)
   const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
 
-  // 데이터 불러오기 - 페이지 진입 시마다 refetch
+  // 데이터 불러오기 - 마운트, 년/월 변경, 또는 새로고침 필요 시
   useEffect(() => {
     fetchSchedules(currentYear, currentMonth);
   }, [currentYear, currentMonth, fetchSchedules]);
+
+  // 다른 페이지에서 돌아왔을 때 새로고침 필요하면 fetch
+  useEffect(() => {
+    if (needsRefresh) {
+      fetchSchedules(currentYear, currentMonth);
+    }
+  }, [needsRefresh, currentYear, currentMonth, fetchSchedules]);
 
   const currentDate = useMemo(
     () => new Date(currentYear, currentMonth - 1, 1),
